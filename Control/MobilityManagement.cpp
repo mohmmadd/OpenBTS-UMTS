@@ -61,6 +61,20 @@ void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::Log
 		default:
 			LOG(NOTICE) << "service not supported for " << *cmsrq;
 			// Cause 0x20 means "serivce not supported".
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+			GSM::L3Message* msg = getMessage(DCCH);
+			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+			if (!resp) {
+				if (msg) {
+					LOG(WARNING) << "Unexpected message " << *msg;
+					delete msg;
+				}
+				throw UnexpectedMessage();
+			}
+			LOG(INFO) << *resp;
+			if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
+				LOG(WARNING) << "failed access to TMSITable";
+			delete msg;
 			DCCH->send(GSM::L3CMServiceReject(0x20));
 			DCCH->send(GSM::L3ChannelRelease());
 	}
