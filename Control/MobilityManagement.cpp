@@ -367,6 +367,20 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	// We fail closed unless we're configured otherwise
 	if (!success && !openRegistration) {
 		LOG(INFO) << "registration FAILED: " << mobileID;
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		GSM::L3Message* msg = getMessage(DCCH);
+		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+		if (!resp) {
+			if (msg) {
+				LOG(WARNING) << "Unexpected message " << *msg;
+				delete msg;
+			}
+			throw UnexpectedMessage();
+		}
+		LOG(INFO) << *resp;
+		if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
+			LOG(WARNING) << "failed access to TMSITable";
+		delete msg;
 		DCCH->send(GSM::L3LocationUpdatingReject(gConfig.getNum("Control.LUR.UnprovisionedRejectCause")));
 		if (!preexistingTMSI) {
 			sendWelcomeMessage( "Control.LUR.FailedRegistration.Message",
