@@ -46,7 +46,7 @@ using namespace Control;
 
 
 /** Controller for CM Service requests, dispatches out to multiple possible transaction controllers. */
-void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH)
+void Control::CMServiceResponder(const char *IMSI, const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH)
 {
 	assert(cmsrq);
 	assert(DCCH);
