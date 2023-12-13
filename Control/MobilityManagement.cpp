@@ -307,6 +307,20 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 
 	if (!authenticateOK && !openRegistration) {
 		LOG(CRIT) << "failed authentication for IMSI " << IMSI;
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		GSM::L3Message* msg = getMessage(DCCH);
+		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+		if (!resp) {
+			if (msg) {
+				LOG(WARNING) << "Unexpected message " << *msg;
+				delete msg;
+			}
+			throw UnexpectedMessage();
+		}
+		LOG(INFO) << *resp;
+		if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
+			LOG(WARNING) << "failed access to TMSITable";
+		delete msg;
 		DCCH->send(GSM::L3AuthenticationReject());
 		DCCH->send(GSM::L3ChannelRelease());
 		return;
