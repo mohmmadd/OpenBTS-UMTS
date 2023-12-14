@@ -300,7 +300,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 
 	if (!authenticateOK && !openRegistration) {
 		LOG(CRIT) << "failed authentication for IMSI " << IMSI;
-		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
 		GSM::L3Message* msg = getMessage(DCCH);
 		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
 		if (!resp) {
