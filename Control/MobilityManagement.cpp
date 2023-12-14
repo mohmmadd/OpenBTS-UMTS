@@ -285,7 +285,18 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 				throw UnexpectedMessage();
 			}
 			LOG(INFO) << *resp;
-			// Reject with a "network failure" cause code, 0x11.
+			// Reject with a "network failure" cause code, 0x11
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
+			GSM::L3Message* msg = getMessage(DCCH);
+			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+			if (!resp) {
+				if (msg) {
+					LOG(WARNING) << "Unexpected message " << *msg;
+					delete msg;
+				}
+				throw UnexpectedMessage();
+			}
+			LOG(INFO) << *resp;.
 			DCCH->send(GSM::L3LocationUpdatingReject(0x11));
 			// HACK -- wait long enough for a response
 			// FIXME -- Why are we doing this?
