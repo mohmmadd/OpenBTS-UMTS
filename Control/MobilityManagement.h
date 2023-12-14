@@ -29,7 +29,7 @@ class L3IMSIDetachIndication;
 
 namespace Control {
 
-void CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH);
+void CMServiceResponder(const char *IMSI, const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH);
 
 void IMSIDetachController(const GSM::L3IMSIDetachIndication* idi, UMTS::DCCHLogicalChannel* DCCH);
 
