@@ -60,7 +60,7 @@ void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::Log
 			break;
 		default:
 			LOG(NOTICE) << "service not supported for " << *cmsrq;
-			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
 			GSM::L3Message* msg = getMessage(DCCH);
 			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
 			if (!resp) {
@@ -263,7 +263,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 		}
 		catch(SIPTimeout) {
 			LOG(ALERT) "SIP authentication timed out.  Is the proxy running at " << gConfig.getStr("SIP.Proxy.Registration");
-			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
 			GSM::L3Message* msg = getMessage(DCCH);
 			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
 			if (!resp) {
@@ -357,7 +357,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	// We fail closed unless we're configured otherwise
 	if (!success && !openRegistration) {
 		LOG(INFO) << "registration FAILED: " << mobileID;
-		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
 		GSM::L3Message* msg = getMessage(DCCH);
 		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
 		if (!resp) {
