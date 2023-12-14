@@ -46,7 +46,7 @@ using namespace Control;
 
 
 /** Controller for CM Service requests, dispatches out to multiple possible transaction controllers. */
-void Control::CMServiceResponder(const char *IMSI, const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH)
+void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::LogicalChannel* DCCH)
 {
 	assert(cmsrq);
 	assert(DCCH);
@@ -61,20 +61,6 @@ void Control::CMServiceResponder(const char *IMSI, const GSM::L3CMServiceRequest
 		default:
 			LOG(NOTICE) << "service not supported for " << *cmsrq;
 			// Cause 0x20 means "serivce not supported".
-			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
-			GSM::L3Message* msg = getMessage(DCCH);
-			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
-			if (!resp) {
-				if (msg) {
-					LOG(WARNING) << "Unexpected message " << *msg;
-					delete msg;
-				}
-				throw UnexpectedMessage();
-			}
-			LOG(INFO) << *resp;
-			if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
-				LOG(WARNING) << "failed access to TMSITable";
-			delete msg;
 			DCCH->send(GSM::L3CMServiceReject(0x20));
 			DCCH->send(GSM::L3ChannelRelease());
 	}
@@ -225,21 +211,6 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	catch(SIPTimeout) {
 		LOG(ALERT) "SIP registration timed out.  Is the proxy running at " << gConfig.getStr("SIP.Proxy.Registration");
 		// Reject with a "network failure" cause code, 0x11.
-		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
-		GSM::L3Message* msg = getMessage(DCCH);
-		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
-		if (!resp) {
-			if (msg) {
-				LOG(WARNING) << "Unexpected message " << *msg;
-				delete msg;
-			}
-			throw UnexpectedMessage();
-		}
-		LOG(INFO) << *resp;
-		if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
-			LOG(WARNING) << "failed access to TMSITable";
-		delete msg;
-		sleep(4);
 		DCCH->send(GSM::L3LocationUpdatingReject(0x11));
 		// HACK -- wait long enough for a response
 		// FIXME -- Why are we doing this?
@@ -307,20 +278,6 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 
 	if (!authenticateOK && !openRegistration) {
 		LOG(CRIT) << "failed authentication for IMSI " << IMSI;
-		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
-		GSM::L3Message* msg = getMessage(DCCH);
-		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
-		if (!resp) {
-			if (msg) {
-				LOG(WARNING) << "Unexpected message " << *msg;
-				delete msg;
-			}
-			throw UnexpectedMessage();
-		}
-		LOG(INFO) << *resp;
-		if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
-			LOG(WARNING) << "failed access to TMSITable";
-		delete msg;
 		DCCH->send(GSM::L3AuthenticationReject());
 		DCCH->send(GSM::L3ChannelRelease());
 		return;
@@ -367,20 +324,6 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	// We fail closed unless we're configured otherwise
 	if (!success && !openRegistration) {
 		LOG(INFO) << "registration FAILED: " << mobileID;
-		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
-		GSM::L3Message* msg = getMessage(DCCH);
-		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
-		if (!resp) {
-			if (msg) {
-				LOG(WARNING) << "Unexpected message " << *msg;
-				delete msg;
-			}
-			throw UnexpectedMessage();
-		}
-		LOG(INFO) << *resp;
-		if (!gTMSITable.IMEI(IMSI,resp->mobileID().digits()))
-			LOG(WARNING) << "failed access to TMSITable";
-		delete msg;
 		DCCH->send(GSM::L3LocationUpdatingReject(gConfig.getNum("Control.LUR.UnprovisionedRejectCause")));
 		if (!preexistingTMSI) {
 			sendWelcomeMessage( "Control.LUR.FailedRegistration.Message",
