@@ -60,6 +60,17 @@ void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::Log
 			break;
 		default:
 			LOG(NOTICE) << "service not supported for " << *cmsrq;
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+			GSM::L3Message* msg = getMessage(DCCH);
+			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+			if (!resp) {
+				if (msg) {
+					LOG(WARNING) << "Unexpected message " << *msg;
+					delete msg;
+				}
+				throw UnexpectedMessage();
+			}
+			LOG(INFO) << *resp;
 			// Cause 0x20 means "serivce not supported".
 			DCCH->send(GSM::L3CMServiceReject(0x20));
 			DCCH->send(GSM::L3ChannelRelease());
@@ -252,6 +263,17 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 		}
 		catch(SIPTimeout) {
 			LOG(ALERT) "SIP authentication timed out.  Is the proxy running at " << gConfig.getStr("SIP.Proxy.Registration");
+			DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+			GSM::L3Message* msg = getMessage(DCCH);
+			GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+			if (!resp) {
+				if (msg) {
+					LOG(WARNING) << "Unexpected message " << *msg;
+					delete msg;
+				}
+				throw UnexpectedMessage();
+			}
+			LOG(INFO) << *resp;
 			// Reject with a "network failure" cause code, 0x11.
 			DCCH->send(GSM::L3LocationUpdatingReject(0x11));
 			// HACK -- wait long enough for a response
@@ -278,6 +300,17 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 
 	if (!authenticateOK && !openRegistration) {
 		LOG(CRIT) << "failed authentication for IMSI " << IMSI;
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		GSM::L3Message* msg = getMessage(DCCH);
+		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+		if (!resp) {
+			if (msg) {
+				LOG(WARNING) << "Unexpected message " << *msg;
+				delete msg;
+			}
+			throw UnexpectedMessage();
+		}
+		LOG(INFO) << *resp;
 		DCCH->send(GSM::L3AuthenticationReject());
 		DCCH->send(GSM::L3ChannelRelease());
 		return;
@@ -324,6 +357,17 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	// We fail closed unless we're configured otherwise
 	if (!success && !openRegistration) {
 		LOG(INFO) << "registration FAILED: " << mobileID;
+		DCCH->send(GSM::L3IdentityRequest(GSM::IMEIType));
+		GSM::L3Message* msg = getMessage(DCCH);
+		GSM::L3IdentityResponse *resp = dynamic_cast<GSM::L3IdentityResponse*>(msg);
+		if (!resp) {
+			if (msg) {
+				LOG(WARNING) << "Unexpected message " << *msg;
+				delete msg;
+			}
+			throw UnexpectedMessage();
+		}
+		LOG(INFO) << *resp;
 		DCCH->send(GSM::L3LocationUpdatingReject(gConfig.getNum("Control.LUR.UnprovisionedRejectCause")));
 		if (!preexistingTMSI) {
 			sendWelcomeMessage( "Control.LUR.FailedRegistration.Message",
