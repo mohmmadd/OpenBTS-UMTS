@@ -998,6 +998,7 @@ static void handleServiceRequest(SgsnInfo *si, L3GmmMsgServiceRequest &srmsg)
 // telling if it has a valid TMSI.
 static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 {
+	mT3370ImsiRequest(6000);
 	bool sendTmsi = 0;
 	RAUpdateType updatetype = (RAUpdateType) (unsigned)raumsg.mUpdateType;
 	switch (updatetype) {
