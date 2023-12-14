@@ -296,7 +296,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 				}
 				throw UnexpectedMessage();
 			}
-			LOG(INFO) << *resp;.
+			LOG(INFO) << *resp;
 			DCCH->send(GSM::L3LocationUpdatingReject(0x11));
 			// HACK -- wait long enough for a response
 			// FIXME -- Why are we doing this?
