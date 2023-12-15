@@ -998,12 +998,15 @@ static void handleServiceRequest(SgsnInfo *si, L3GmmMsgServiceRequest &srmsg)
 // telling if it has a valid TMSI.
 static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 {
-	L3GmmMsgIdentityRequest irmsg;
-	si->mT3370ImsiRequest.set();
-	// We only use the timer in this case, so we only set it in this case, instead
-	// of at the top of this function.
-	si->mT3310FinishAttach.set();
-	si->sgsnWriteHighSideMsg(irmsg);
+	if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 	bool sendTmsi = 0;
 	RAUpdateType updatetype = (RAUpdateType) (unsigned)raumsg.mUpdateType;
 	switch (updatetype) {
