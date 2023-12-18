@@ -25,8 +25,6 @@ AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([Globals/Defines.h]) # project-wide defines
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([config])
-AM_INIT_AUTOMAKE([-Wno-portability])
-
 dnl Checks for programs.
 : ${CXXFLAGS=""} ## remove auto setting of CXXFLAGS = -g -O2
 AC_PROG_CXX
