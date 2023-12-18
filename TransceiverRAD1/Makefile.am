@@ -10,7 +10,7 @@
 #
 # This use of this software may be subject to additional restrictions.
 # See the LEGAL file in the main directory for details.
-
+AUTOMAKE_OPTIONS = subdir-objects
 if !HAVE_UHD
 include $(top_srcdir)/Makefile.common
 
