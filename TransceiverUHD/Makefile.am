@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS = subdir-objects
 if HAVE_UHD
 include $(top_srcdir)/Makefile.common
 
