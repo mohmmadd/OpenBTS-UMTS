@@ -1284,6 +1284,15 @@ static void handleL3GmmMsg(SgsnInfo *si,ByteVector &frame1)
 		break;
 	}
 	case L3GmmMsg::ServiceRequest: {
+		if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 		L3GmmMsgServiceRequest srmsg;
 		srmsg.gmmParse(frame);
 		SGSNLOG("Received ServiceRequest message" << si);
@@ -1307,6 +1316,15 @@ static void handleL3GmmMsg(SgsnInfo *si,ByteVector &frame1)
 		//GMMInformation = 0x21,
 	default:
 		SGSNWARN("Ignoring GPRS GMM message type "<<mt <<L3GmmMsg::name(mt));
+		if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 		return;
 	}
 }
