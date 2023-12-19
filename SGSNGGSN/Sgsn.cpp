@@ -846,6 +846,15 @@ static void handleAttachRequest(SgsnInfo *si, L3GmmMsgAttachRequest &armsg)
 		//} else {
 			// If the MS did not send us an IMSI already, ask for one.
 			if (armsg.mMobileId.isImsi()) {
+				if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 				// The MS included the IMSI in the attach request
 				imsi = armsg.mMobileId.getImsi();
 				findGmmByImsi(imsi,si);	// Create the gmm and associate with si.
