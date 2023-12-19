@@ -1211,6 +1211,15 @@ static void handleL3GmmMsg(SgsnInfo *si,ByteVector &frame1)
 		armsg.gmmParse(frame);
 		SGSNLOG("Received "<<armsg.str()<<si);
 		handleAttachRequest(si,armsg);
+		if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 		dumpGmmInfo();
 		break;
 	}
