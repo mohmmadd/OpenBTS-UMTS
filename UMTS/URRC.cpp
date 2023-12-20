@@ -612,15 +612,6 @@ UEInfo *Rrc::findUeByAsnId(AsnUeId *asnId)
 		result = findUeByUrnti(urnti);
 		return result ? result : new UEInfo(urnti);
 	}
-	if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
-					// Send off a request for the imsi.
-					L3GmmMsgIdentityRequest irmsg;
-					si->mT3370ImsiRequest.set();
-					// We only use the timer in this case, so we only set it in this case, instead
-					// of at the top of this function.
-					si->mT3310FinishAttach.set();
-					si->sgsnWriteHighSideMsg(irmsg);
-	}
 	LOG(ALERT) << "no match"<<LOGHEX2("ptmsi",(uint32_t) asnId->mPtmsi)<<LOGVAR2("raimatch",asnId->RaiMatches())
 		<<LOGHEX2("findHandlebyPTmsi-urnti",urnti);
 	return NULL;
