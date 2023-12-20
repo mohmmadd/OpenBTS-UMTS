@@ -605,40 +605,40 @@ static void sendAuthenticationRequest(SgsnInfo *si, GmmInfo::SecurityState secSt
 					//sendAuthenticationRequest(si);
 	}
 
-        SIPEngine engine(gConfig.getStr("SIP.Proxy.Registration").c_str(),IMSI.c_str());
-	string RAND;
+     //   SIPEngine engine(gConfig.getStr("SIP.Proxy.Registration").c_str(),IMSI.c_str());
+	//string RAND;
         //bool success =
-	try {
-		engine.Register(SIPEngine::SIPRegister, &RAND);
-	} catch(SIPTimeout) {
-		LOG(ALERT) << "SIP registration timed out.  Is sipauthserve running?";
-		return;	// Thats the end of that.
+	//try {
+//		engine.Register(SIPEngine::SIPRegister, &RAND);
+	//} catch(SIPTimeout) {
+	//	LOG(ALERT) << "SIP registration timed out.  Is sipauthserve running?";
+	//	return;	// Thats the end of that.
 	}
-	gmm->mSecState = secState;
-	// Stick new UE into TMSI table if its not already there
-	if (!gTMSITable.TMSI(IMSI.c_str())) gTMSITable.assign(IMSI.c_str());
-	if (RAND.size() < 2) {
+	//gmm->mSecState = secState;
+//	// Stick new UE into TMSI table if its not already there
+//	if (!gTMSITable.TMSI(IMSI.c_str())) gTMSITable.assign(IMSI.c_str());
+//	if (RAND.size() < 2) {
 		// This happens if the IMSI does not exist in the registration database.
-		LOG(NOTICE) << "No registration found for IMSI "<<IMSI;
+	//	LOG(NOTICE) << "No registration found for IMSI "<<IMSI;
 		// TODO: And what should we do?  By just returning the UE just keeps trying and trying;
 		// we should send something to shut it up.
-		return;
-	}
+//		return;
+//	}
 
-        ByteVector rand(RAND.size()/2);    // Leave it random.
-	for (unsigned i = 0; i < RAND.size(); i++) {
-		char ch = (RAND.c_str())[i];
-		ch = (ch > '9') ? ((ch & 0x0f) + 9) : (ch & 0x0f);
-		rand.setField(i*4,ch,4);
-	}
-	si->mRAND = rand;
-        L3GmmMsgAuthentication amsg(rand);
-        si->sgsnWriteHighSideMsg(amsg);
-                  status = gmm->getPdpContextStatus();
-                  nsapiMask = status.mStatus[1] << 8 | status.mStatus[0];
-                  if (nsapiMask > 0) nsapiMask = (int) floor(log2(nsapiMask));
-                  pdp = gmm->getPdp(nsapiMask);
-                  printf("PDP of %u is %0x\n",nsapiMask,pdp);
+   //     ByteVector rand(RAND.size()/2);    // Leave it random.
+//	for (unsigned i = 0; i < RAND.size(); i++) {
+//		char ch = (RAND.c_str())[i];
+//		ch = (ch > '9') ? ((ch & 0x0f) + 9) : (ch & 0x0f);
+//		rand.setField(i*4,ch,4);
+//	}
+//	si->mRAND = rand;
+    //    L3GmmMsgAuthentication amsg(rand);
+   //     si->sgsnWriteHighSideMsg(amsg);
+    //              status = gmm->getPdpContextStatus();
+    //              nsapiMask = status.mStatus[1] << 8 | status.mStatus[0];
+    //              if (nsapiMask > 0) nsapiMask = (int) floor(log2(nsapiMask));
+   //               pdp = gmm->getPdp(nsapiMask);
+    //              printf("PDP of %u is %0x\n",nsapiMask,pdp);
 	LOG(NOTICE) << "tamam "
 }
 #endif
