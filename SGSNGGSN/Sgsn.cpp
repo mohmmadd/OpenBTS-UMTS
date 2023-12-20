@@ -846,11 +846,6 @@ static void handleAttachRequest(SgsnInfo *si, L3GmmMsgAttachRequest &armsg)
 		//} else {
 			// If the MS did not send us an IMSI already, ask for one.
 			if (armsg.mMobileId.isImsi()) {
-				
-					// Send off a request for the imsi.
-					L3GmmMsgIdentityRequest irmsg;
-					// We only use the timer in this case, so we only set it in this case, instead
-					// of at the top of this function.
 	
 				// The MS included the IMSI in the attach request
 				imsi = armsg.mMobileId.getImsi();
@@ -1004,10 +999,15 @@ static void handleServiceRequest(SgsnInfo *si, L3GmmMsgServiceRequest &srmsg)
 // telling if it has a valid TMSI.
 static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 {
+	if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
 					// Send off a request for the imsi.
-	L3GmmMsgIdentityRequest irmsg;
+					L3GmmMsgIdentityRequest irmsg;
+					si->mT3370ImsiRequest.set();
 					// We only use the timer in this case, so we only set it in this case, instead
 					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+	}
 					
 	bool sendTmsi = 0;
 	RAUpdateType updatetype = (RAUpdateType) (unsigned)raumsg.mUpdateType;
