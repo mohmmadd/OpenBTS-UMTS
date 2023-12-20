@@ -639,7 +639,7 @@ static void sendAuthenticationRequest(SgsnInfo *si, GmmInfo::SecurityState secSt
                   if (nsapiMask > 0) nsapiMask = (int) floor(log2(nsapiMask));
                   pdp = gmm->getPdp(nsapiMask);
                   printf("PDP of %u is %0x\n",nsapiMask,pdp);
-
+	LOG(NOTICE) << "tamam "
 }
 #endif
 
