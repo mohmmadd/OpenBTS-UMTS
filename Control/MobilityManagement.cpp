@@ -286,7 +286,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 			}
 			LOG(INFO) << *resp;
 			// Reject with a "network failure" cause code, 0x11
-			DCCH->send(GSM::L3IdentityRequest(GSM::IMSIType));
+			DCCH->send(GSM::L3LocationUpdatingReject(0x11));
 			// HACK -- wait long enough for a response
 			// FIXME -- Why are we doing this?
 			sleep(4);
