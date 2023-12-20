@@ -607,7 +607,7 @@ static void sendAuthenticationRequest(SgsnInfo *si, GmmInfo::SecurityState secSt
 
         SIPEngine engine(gConfig.getStr("SIP.Proxy.Registration").c_str(),IMSI.c_str());
 	string RAND;
-        bool success =
+        //bool success =
 	try {
 		engine.Register(SIPEngine::SIPRegister, &RAND);
 		LOG(NOTICE) << "tamam "
@@ -635,7 +635,7 @@ static void sendAuthenticationRequest(SgsnInfo *si, GmmInfo::SecurityState secSt
 	si->mRAND = rand;
         L3GmmMsgAuthentication amsg(rand);
         si->sgsnWriteHighSideMsg(amsg);
-                 status = gmm->getPdpContextStatus();
+                  status = gmm->getPdpContextStatus();
                   nsapiMask = status.mStatus[1] << 8 | status.mStatus[0];
                   if (nsapiMask > 0) nsapiMask = (int) floor(log2(nsapiMask));
                   pdp = gmm->getPdp(nsapiMask);
