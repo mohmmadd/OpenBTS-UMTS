@@ -608,13 +608,13 @@ static void sendAuthenticationRequest(SgsnInfo *si, GmmInfo::SecurityState secSt
         SIPEngine engine(gConfig.getStr("SIP.Proxy.Registration").c_str(),IMSI.c_str());
 	string RAND;
         //bool success =
-	try {
-		engine.Register(SIPEngine::SIPRegister, &RAND);
-		LOG(NOTICE) << "tamam "
-	} catch(SIPTimeout) {
+	//try {
+	//	engine.Register(SIPEngine::SIPRegister, &RAND);
+	//	LOG(NOTICE) << "tamam "
+	//} catch(SIPTimeout) {
 		LOG(ALERT) << "SIP registration timed out.  Is sipauthserve running?";
-		return;	// Thats the end of that.
-	}
+	//	return;	// Thats the end of that.
+	//}
 	gmm->mSecState = secState;
 //	 Stick new UE into TMSI table if its not already there
 	if (!gTMSITable.TMSI(IMSI.c_str())) gTMSITable.assign(IMSI.c_str());
