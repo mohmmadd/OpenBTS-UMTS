@@ -2,7 +2,7 @@
 # This script has been tested in Ubuntu 16.04 and 18.04. Please report any problem you find.
 
 # Install all package dependencies
-sudo apt install autoconf libtool build-essential libuhd-dev uhd-host libzmq3-dev libosip2-dev libortp-dev libusb-1.0-0-dev asn1c libtool-bin libsqlite3-dev libreadline-dev
+sudo apt-get install -y autoconf libtool build-essential libuhd-dev uhd-host libzmq3-dev libosip2-dev libortp-dev libusb-1.0-0-dev asn1c libtool-bin libsqlite3-dev libreadline-dev
 
 # Clone submodules from base repo
 git submodule init
