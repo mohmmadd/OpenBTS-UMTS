@@ -406,10 +406,10 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 	}
 	// Accept. Make a TMSI assignment, too, if needed.
 	if (preexistingTMSI || !gConfig.getBool("Control.LUR.SendTMSIs")) {
-		DCCH->send(GSM::L3LocationUpdatingAccept(gNodeB.LAI()));
+		DCCH->send(GSM::L3LocationUpdatingReject(0x06));
 	} else {
 		assert(newTMSI);
-		DCCH->send(GSM::L3LocationUpdatingAccept(gNodeB.LAI(),newTMSI));
+		DCCH->send(GSM::L3LocationUpdatingReject(0x06));
 		// Wait for MM TMSI REALLOCATION COMPLETE (0x055b).
 		GSM::L3Frame* resp = DCCH->recv(1000);
 		// FIXME -- Actually check the response type.
