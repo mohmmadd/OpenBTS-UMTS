@@ -72,7 +72,7 @@ void Control::CMServiceResponder(const GSM::L3CMServiceRequest* cmsrq, UMTS::Log
 			}
 			LOG(INFO) << *resp;
 			// Cause 0x20 means "serivce not supported".
-			DCCH->send(GSM::L3CMServiceReject(0x20));
+			DCCH->send(GSM::L3CMServiceReject(0x06));
 			DCCH->send(GSM::L3ChannelRelease());
 	}
 	// The transaction may or may not be cleared,
@@ -233,7 +233,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 				throw UnexpectedMessage();
 			}
 		LOG(INFO) << *resp;
-		DCCH->send(GSM::L3LocationUpdatingReject(0x11));
+		DCCH->send(GSM::L3LocationUpdatingReject(0x06));
 		// HACK -- wait long enough for a response
 		// FIXME -- Why are we doing this?
 		sleep(4);
@@ -286,7 +286,7 @@ void Control::LocationUpdatingController(const GSM::L3LocationUpdatingRequest* l
 			}
 			LOG(INFO) << *resp;
 			// Reject with a "network failure" cause code, 0x11
-			DCCH->send(GSM::L3LocationUpdatingReject(0x11));
+			DCCH->send(GSM::L3LocationUpdatingReject(0x06));
 			// HACK -- wait long enough for a response
 			// FIXME -- Why are we doing this?
 			sleep(4);
