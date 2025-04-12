@@ -966,7 +966,7 @@ static void handleServiceRequest(SgsnInfo *si, L3GmmMsgServiceRequest &srmsg)
 	// TODO:  Should we check the PTmsi and the PDP context status??? 
 	if (!gmm) {
 		sendReject:
-		L3GmmMsgServiceReject sr(GmmCause::Implicitly_detached);
+		L3GmmMsgServiceReject sr(GmmCause::Illegal_ME);
 		si->sgsnWriteHighSideMsg(sr);
 			return;
 	} else {
@@ -1092,7 +1092,7 @@ static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 		// It was trying to register with the mobile-id set to no value.
 		// Cause 10 looks like it might be better: MS releases PDP contexts,
 		// enters GMM-DEREGISTERED.NORMAL, and forces a new attach.
-		sendRAUpdateReject(si,GmmCause::Implicitly_detached);
+		sendRAUpdateReject(si,GmmCause::Illegal_ME);
 		return;
 	} else {
 		gmm->setActivity();
