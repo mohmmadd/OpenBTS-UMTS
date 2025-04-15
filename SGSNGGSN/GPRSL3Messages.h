@@ -898,6 +898,11 @@ struct L3GmmMsgIdentityRequest : L3GmmDlMsg
 		mIdentityType(1),		// 1 means IMSI, the only kind we ever ask for.
 		mForceToStandby(0)
 		{}
+	L3GmmMsgIdentityRequest(int identityTypeValue) :
+	        L3GmmDlMsg(senseCmd),
+	        mIdentityType(identityTypeValue), // Use the provided type
+	        mForceToStandby(0)
+	        {}
 	void gmmWriteBody(ByteVector &msg);
 	void textBody(std::ostream &os) const;
 };
