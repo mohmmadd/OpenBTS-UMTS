@@ -866,7 +866,24 @@ static void handleAttachRequest(SgsnInfo *si, L3GmmMsgAttachRequest &armsg)
 					si->mT3310FinishAttach.set();
 					si->sgsnWriteHighSideMsg(irmsg);
 				}
+				
 				return;
+				if (!si->mT3370ImeiRequest.active() || si->mT3370ImeiRequest.expired()) {
+        // Send request for IMEI using the new constructor (Option B)
+				        L3GmmMsgIdentityRequest imei_req_msg(2); // 2 means IMEI
+				
+				        // Set the IMEI-specific timer (the new timer)
+				        si->mT3370ImeiRequest.set();
+				
+				        // Also set or update the overall attach completion timer
+				        si->mT3310FinishAttach.set(); // Or maybe reset it depending on logic
+				
+				        // Send the message
+				        si->sgsnWriteHighSideMsg(imei_req_msg);
+				
+				        // *** Important: Transition to "Waiting for IMEI Response" state ***
+				        // setState(WAITING_FOR_IMEI_RESPONSE); // Or appropriate state
+				        return; // Wait for the response
 			}
 		//}
 		//SgsnInfo *si2 = Sgsn::findAssignedSgsnInfoByImsi(imsi);
