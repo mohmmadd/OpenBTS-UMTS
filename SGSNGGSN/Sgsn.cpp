@@ -103,7 +103,7 @@ SgsnInfo::SgsnInfo(uint32_t wMsHandle) :
 	mLlcEngine(0),
 	mMsHandle(wMsHandle),
 	mT3310FinishAttach(15000),	// 15 seconds
-	mT3370ImsiRequest(6000)		// 6 seconds
+	mT3370ImsiRequest(6000),		// 6 seconds
 	// mSuspended(0),
 	mT3370ImeiRequest(6000)
 {
@@ -884,6 +884,7 @@ static void handleAttachRequest(SgsnInfo *si, L3GmmMsgAttachRequest &armsg)
 				        // *** Important: Transition to "Waiting for IMEI Response" state ***
 				        // setState(WAITING_FOR_IMEI_RESPONSE); // Or appropriate state
 				        return; // Wait for the response
+				}
 			}
 		//}
 		//SgsnInfo *si2 = Sgsn::findAssignedSgsnInfoByImsi(imsi);
