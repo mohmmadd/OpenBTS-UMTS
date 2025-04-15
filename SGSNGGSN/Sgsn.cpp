@@ -718,10 +718,20 @@ static void handleIdentityResponse(SgsnInfo *si, L3GmmMsgIdentityResponse &irmsg
 		}
 		ByteVector passbyreftmp = irmsg.mMobileId.getImsi();		// c++ foo bar
 		findGmmByImsi(passbyreftmp,si);	// Always succeeds - creates if necessary, sets si->mGmmp.
-
+		LOG(NOTICE) << "IMSI:" << irmsg.str();
 		// Use the imsi as the mobileId in the AttachAccept.
 		//si->mAttachMobileId = irmsg.mMobileId;
-		handleAttachStep(si);
+		if (! si->mT3370ImeiRequest.active() || si->mT3370ImeiRequest.expired()) {
+					// Send off a request for the imsi.
+					L3GmmMsgIdentityRequest irmsg(2);
+					si->mT3370ImeiRequest.set();
+					// We only use the timer in this case, so we only set it in this case, instead
+					// of at the top of this function.
+					si->mT3310FinishAttach.set();
+					si->sgsnWriteHighSideMsg(irmsg);
+					return;
+	}
+	//	handleAttachStep(si);
 		si->mT3310FinishAttach.reset();
 		//GmmInfo *gmm = findGmmByImsi(passbyreftmp,si);	// Always succeeds - creates if necessary.
 		// TODO: Why do we send the mobileid?  It seems to Work this way, just wondering, because
@@ -867,23 +877,9 @@ static void handleAttachRequest(SgsnInfo *si, L3GmmMsgAttachRequest &armsg)
 					si->sgsnWriteHighSideMsg(irmsg);
 				}
 				
-				return;
-				if (!si->mT3370ImeiRequest.active() || si->mT3370ImeiRequest.expired()) {
-        // Send request for IMEI using the new constructor (Option B)
-				        L3GmmMsgIdentityRequest imei_req_msg(2); // 2 means IMEI
+
+				return; 
 				
-				        // Set the IMEI-specific timer (the new timer)
-				        si->mT3370ImeiRequest.set();
-				
-				        // Also set or update the overall attach completion timer
-				        si->mT3310FinishAttach.set(); // Or maybe reset it depending on logic
-				
-				        // Send the message
-				        si->sgsnWriteHighSideMsg(imei_req_msg);
-				
-				        // *** Important: Transition to "Waiting for IMEI Response" state ***
-				        // setState(WAITING_FOR_IMEI_RESPONSE); // Or appropriate state
-				}
 			}
 		//}
 		//SgsnInfo *si2 = Sgsn::findAssignedSgsnInfoByImsi(imsi);
@@ -1020,13 +1016,31 @@ static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 {
 	if (! si->mT3370ImsiRequest.active() || si->mT3370ImsiRequest.expired()) {
 					// Send off a request for the imsi.
-					L3GmmMsgIdentityRequest irmsg;
+					L3GmmMsgIdentityRequest irmsg(1);
 					si->mT3370ImsiRequest.set();
 					// We only use the timer in this case, so we only set it in this case, instead
 					// of at the top of this function.
 					si->mT3310FinishAttach.set();
 					si->sgsnWriteHighSideMsg(irmsg);
 	}
+	//if (!si->mT3370ImeiRequest.active() || si->mT3370ImeiRequest.expired()) {
+        // Send request for IMEI using the new constructor (Option B)
+			/*	        L3GmmMsgIdentityRequest imei_req_msg(2); // 2 means IMEI
+				
+				        // Set the IMEI-specific timer (the new timer)
+				        si->mT3370ImeiRequest.set();
+				
+				        // Also set or update the overall attach completion timer
+				        si->mT3310FinishAttach.set(); // Or maybe reset it depending on logic
+				
+				        // Send the message
+				        si->sgsnWriteHighSideMsg(imei_req_msg);
+				
+				        // *** Important: Transition to "Waiting for IMEI Response" state ***
+				        // setState(WAITING_FOR_IMEI_RESPONSE); // Or appropriate state
+				       // Wait for the response
+	//}*/
+	
 					
 	bool sendTmsi = 0;
 	RAUpdateType updatetype = (RAUpdateType) (unsigned)raumsg.mUpdateType;
@@ -1233,6 +1247,7 @@ static void handleL3GmmMsg(SgsnInfo *si,ByteVector &frame1)
 		SGSNLOG("Received "<<armsg.str()<<si);
 		handleAttachRequest(si,armsg);
 		
+
 					
 					// We only use the timer in this case, so we only set it in this case, instead
 					// of at the top of this function.
@@ -1294,6 +1309,7 @@ static void handleL3GmmMsg(SgsnInfo *si,ByteVector &frame1)
 	}
 	case L3GmmMsg::ServiceRequest: {
 		
+	
 		L3GmmMsgServiceRequest srmsg;
 		srmsg.gmmParse(frame);
 		SGSNLOG("Received ServiceRequest message" << si);
