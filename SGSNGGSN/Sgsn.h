@@ -317,7 +317,7 @@ class SgsnInfo
 	// T3370 is the ImsiRequest repeat at 6s, but the total time is only 15s, so its hardly worth bothering,
 	// so we dont; the MS will RACH again if necessary.  But here is the timer anyway.
 	GSM::Z100Timer mT3370ImsiRequest;
-
+	GSM::Z100Timer mT3370ImeiRequest;
 	SgsnInfo(uint32_t wTlli);	// May be a URNTI instead of TLLI.
 	~SgsnInfo();
 	void sirm();	// Remove si from list and delete it.
