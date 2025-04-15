@@ -105,6 +105,7 @@ SgsnInfo::SgsnInfo(uint32_t wMsHandle) :
 	mT3310FinishAttach(15000),	// 15 seconds
 	mT3370ImsiRequest(6000)		// 6 seconds
 	// mSuspended(0),
+	mT3370ImeiRequest(6000)
 {
 	//memset(mOldMcc,0,sizeof(mOldMcc));
 	//memset(mOldMnc,0,sizeof(mOldMnc));
