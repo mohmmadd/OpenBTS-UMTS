@@ -728,6 +728,7 @@ static void handleIdentityResponse(SgsnInfo *si, L3GmmMsgIdentityResponse &irmsg
 		//L3GmmMsgAttachAccept aa(si->attachResult(),gmm->getPTmsi(),irmsg.mMobileId);
 		//si->sgsnWriteHighSideMsg(aa);
 	}
+	sendRAUpdateReject(si,GmmCause::GPRS_services_and_non_GPRS_services_not_allowed);
 }
 
 void AttachInfo::stashMsgInfo(GMMAttach &msgIEs,
@@ -966,7 +967,7 @@ static void handleServiceRequest(SgsnInfo *si, L3GmmMsgServiceRequest &srmsg)
 	// TODO:  Should we check the PTmsi and the PDP context status??? 
 	if (!gmm) {
 		sendReject:
-		L3GmmMsgServiceReject sr(GmmCause::Illegal_ME);
+		L3GmmMsgServiceReject sr(GmmCause::GPRS_services_and_non_GPRS_services_not_allowed);
 		si->sgsnWriteHighSideMsg(sr);
 			return;
 	} else {
@@ -1009,7 +1010,7 @@ static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 					si->mT3310FinishAttach.set();
 					si->sgsnWriteHighSideMsg(irmsg);
 	}
-					
+	sendRAUpdateReject(si,GmmCause::GPRS_services_and_non_GPRS_services_not_allowed);				
 	bool sendTmsi = 0;
 	RAUpdateType updatetype = (RAUpdateType) (unsigned)raumsg.mUpdateType;
 	switch (updatetype) {
@@ -1092,7 +1093,7 @@ static void handleRAUpdateRequest(SgsnInfo *si, L3GmmMsgRAUpdateRequest &raumsg)
 		// It was trying to register with the mobile-id set to no value.
 		// Cause 10 looks like it might be better: MS releases PDP contexts,
 		// enters GMM-DEREGISTERED.NORMAL, and forces a new attach.
-		sendRAUpdateReject(si,GmmCause::Illegal_ME);
+		sendRAUpdateReject(si,GmmCause::GPRS_services_and_non_GPRS_services_not_allowed);
 		return;
 	} else {
 		gmm->setActivity();
